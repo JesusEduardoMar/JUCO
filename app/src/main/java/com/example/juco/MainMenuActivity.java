@@ -21,11 +21,23 @@ public class MainMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        getSupportActionBar().hide();
+
         clothingCard = findViewById(R.id.clothingCard);
+        doCard = findViewById(R.id.doCard);
         clothingCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        doCard.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenuActivity.this, VisualizarCotizacionesActivity.class);
                 startActivity(intent);
             }
         });

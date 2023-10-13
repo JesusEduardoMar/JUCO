@@ -68,20 +68,21 @@ public class MainActivity extends AppCompatActivity {
     private EditText widthEditText;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getSupportActionBar().hide();
+
 
         decoracionList = new ArrayList<>();
         totalSum = 0;
         nombreEditText = findViewById(R.id.nombreEditText);
-        direccionEditText= findViewById(R.id.direccionEditText);
-        mailEditText= findViewById(R.id.mailEditText);
-        telEditText= findViewById(R.id.telEditText);
+        direccionEditText = findViewById(R.id.direccionEditText);
+        mailEditText = findViewById(R.id.mailEditText);
+        telEditText = findViewById(R.id.telEditText);
         productNameEditText = findViewById(R.id.productNameEditText);
         colorEditText = findViewById(R.id.colorEditText);
         modeloEditText = findViewById(R.id.modeloEditText);
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         totalSumTextView = findViewById(R.id.totalSumTextView);
 
         largeEditText = findViewById(R.id.largeEditText);
-        widthEditText= findViewById(R.id.widthEditText);
+        widthEditText = findViewById(R.id.widthEditText);
 
 
         discountEditText = findViewById(R.id.discountEditText);
@@ -157,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     public void clearDecoraciones() {
         decoracionList.clear();
         totalSum = 0;
@@ -199,14 +199,13 @@ public class MainActivity extends AppCompatActivity {
         String modelo = modeloEditText.getText().toString();
         double large = Double.parseDouble(largeEditText.getText().toString());
         double widt = Double.parseDouble(widthEditText.getText().toString());
-        double squareMeter = large*widt;
+        double squareMeter = large * widt;
         double pricePerSquareMeter = Double.parseDouble(pricePerSquareMeterEditText.getText().toString());
         double totalPrice = squareMeter * pricePerSquareMeter;
         double discount = 0.0;
         if (!discountEditText.getText().toString().isEmpty()) {
             discount = Double.parseDouble(discountEditText.getText().toString());
         }
-
 
 
         // Calcular el descuento
@@ -228,8 +227,6 @@ public class MainActivity extends AppCompatActivity {
         // Opcional: Mostrar un mensaje de confirmación
         Toast.makeText(MainActivity.this, "Datos agregados correctamente", Toast.LENGTH_SHORT).show();
     }
-
-
 
 
     private boolean checkPermission() {
@@ -276,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     public void printResult() {
         TableLayout tableLayout = findViewById(R.id.tableLayout);
 
@@ -285,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
         String modelo = modeloEditText.getText().toString();
         double large = Double.parseDouble(largeEditText.getText().toString());
         double widt = Double.parseDouble(widthEditText.getText().toString());
-        double squareMeter = large*widt;
+        double squareMeter = large * widt;
         double pricePerSquareMeter = Double.parseDouble(pricePerSquareMeterEditText.getText().toString());
         double totalPrice = squareMeter * pricePerSquareMeter;
 
@@ -334,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
         tableLayout.addView(row);
         clearFields();
     }
+
     public void clearFields() {
         productNameEditText.setText("");
         colorEditText.setText("");
@@ -343,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
         pricePerSquareMeterEditText.setText("");
         squareMeterEditText.setText("");
     }
+
     public void imprintPdf() {
         // Crear un nuevo documento PDF
         PdfDocument document = new PdfDocument();
@@ -454,7 +454,7 @@ public class MainActivity extends AppCompatActivity {
             double widt = decoracion.getWidt();
             double squareMeter = decoracion.getSquareMeter();
             double pricePerSquareMeter = decoracion.getPricePerSquareMeter();
-            double totalPrice = squareMeter*pricePerSquareMeter;
+            double totalPrice = squareMeter * pricePerSquareMeter;
 
             String[] rowData = {
                     productName,
@@ -494,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 // Calcular el total
-        double total = subtotal - ((descuento/100)*subtotal);
+        double total = subtotal - ((descuento / 100) * subtotal);
 
 // Definir los datos de la segunda tabla
         String[] subtotalData = {
@@ -573,11 +573,11 @@ public class MainActivity extends AppCompatActivity {
 
 // Definir el tercer texto adicional sin formato de negrita
         String signatureText = "_____________________________________\n"
-                +"FIRMA Y NOMBRE\n"
+                + "FIRMA Y NOMBRE\n"
                 + "https://www.decoracionesjuco.com";
 
 // Dibujar el tercer texto adicional sin negrita
-        drawMultilineTextCentered(canvas, signatureText, signatureTextX, signatureTextY,boldPaint, pageWidth - 2 * signatureTextX);
+        drawMultilineTextCentered(canvas, signatureText, signatureTextX, signatureTextY, boldPaint, pageWidth - 2 * signatureTextX);
 
         // Finalizar la página
         document.finishPage(page);
@@ -602,6 +602,7 @@ public class MainActivity extends AppCompatActivity {
 
         document.close();
     }
+
     private List<Decoracion> getDecoraciones() {
         return decoracionList;
     }
@@ -656,6 +657,7 @@ public class MainActivity extends AppCompatActivity {
             y += lineHeight;
         }
     }
+
     public class Decoracion {
         private String productName;
         private String color;
@@ -666,7 +668,7 @@ public class MainActivity extends AppCompatActivity {
         private double pricePerSquareMeter;
         private double totalPrice;
 
-        public Decoracion(String productName, String color, String modelo,double large,double widt, double squareMeter, double pricePerSquareMeter, double totalPrice) {
+        public Decoracion(String productName, String color, String modelo, double large, double widt, double squareMeter, double pricePerSquareMeter, double totalPrice) {
             this.productName = productName;
             this.color = color;
             this.modelo = modelo;
@@ -742,6 +744,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     public String getCurrentDate() {
         // Obtener la fecha actual
         Date currentDate = new Date();
@@ -752,6 +755,4 @@ public class MainActivity extends AppCompatActivity {
         // Formatear la fecha actual como una cadena de texto
         return dateFormat.format(currentDate);
     }
-
-
 }
