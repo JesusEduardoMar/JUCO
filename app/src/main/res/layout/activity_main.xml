@@ -8,33 +8,15 @@
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
-        android:layout_width="410dp"
-        android:layout_height="547dp"
-        android:paddingLeft="16dp"
-        android:paddingTop="16dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.428"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
         tools:context=".MainActivity">
-
 
         <LinearLayout
             android:id="@+id/izquierda"
-            android:layout_width="169dp"
-            android:layout_height="678dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="11dp"
-            android:layout_marginBottom="0dp"
-            android:layout_toStartOf="@+id/derecha"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <TextView
@@ -71,95 +53,6 @@
                 android:maxLines="1"
                 android:nextFocusForward="@+id/telEditText"
                 android:singleLine="true" />
-
-            <TextView
-                android:id="@+id/productNameLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Nombre del producto" />
-
-            <EditText
-                android:id="@+id/productNameEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:inputType="text"
-                android:maxLines="1"
-                android:nextFocusForward="@+id/colorEditText"
-                android:singleLine="true" />
-
-            <TextView
-                android:id="@+id/modeloLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Modelo" />
-
-            <EditText
-                android:id="@+id/modeloEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:inputType="text"
-                android:maxLines="1"
-                android:nextFocusForward="@+id/largeEditText"
-                android:singleLine="true" />
-            <TextView
-                android:id="@+id/widthLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Ancho" />
-
-            <EditText
-                android:id="@+id/widthEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:nextFocusForward="@+id/pricePerSquareMeterEditText"
-                android:singleLine="true" />
-
-            <TextView
-                android:id="@+id/squareMeterLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="m^2" />
-
-            <EditText
-                android:id="@+id/squareMeterEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false"
-                android:imeOptions="actionNext"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:nextFocusForward="@+id/discountEditText"
-                android:singleLine="true" />
-
-            <Button
-                android:id="@+id/sendButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Agregar" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/derecha"
-            android:layout_width="154dp"
-            android:layout_height="680dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginBottom="0dp"
-            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/direccionLabel"
@@ -199,190 +92,22 @@
                 android:nextFocusForward="@+id/productNameEditText"
                 android:singleLine="true" />
 
-            <TextView
-                android:id="@+id/colorLabel"
+            <Button
+                android:id="@+id/sendButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Color" />
-
-            <EditText
-                android:id="@+id/colorEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:inputType="text"
-                android:maxLines="1"
-                android:nextFocusForward="@+id/modeloEditText"
-                android:singleLine="true" />
-
-            <TextView
-                android:id="@+id/largeMeterLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Largo" />
-
-            <EditText
-                android:id="@+id/largeEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:nextFocusForward="@+id/widthEditText"
-                android:singleLine="true" />
-
-            <TextView
-                android:id="@+id/pricePerSquareMeterLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Precio por m^2" />
-
-            <EditText
-                android:id="@+id/pricePerSquareMeterEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:nextFocusForward="@+id/squareMeterEditTex"
-                android:singleLine="true" />
-
-            <TextView
-                android:id="@+id/discountLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Descuento (%)" />
-
-            <EditText
-                android:id="@+id/discountEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:layout_marginTop="16dp"
+                android:text="Agregar" />
 
             <Button
-                android:id="@+id/printButton"
-                android:layout_width="wrap_content"
+                android:id="@+id/nextButton"
+                android:layout_width="106dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Imprimir" />
+                android:layout_marginTop="16dp"
+                android:text="Limpiar" />
 
         </LinearLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/table"
-        android:layout_width="409dp"
-        android:layout_height="122dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintVertical_bias="0.0">
-
-        <TableLayout
-            android:id="@+id/tableLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:layout_marginTop="16dp">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/productNameHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Producto" />
-
-                <TextView
-                    android:id="@+id/colorHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="Color" />
-                <TextView
-                    android:id="@+id/modeloHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="Modelo" />
-
-                <TextView
-                    android:id="@+id/large"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="Largo" />
-
-                <TextView
-                    android:id="@+id/widt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="Ancho" />
-
-                <TextView
-                    android:id="@+id/squareMeterHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="m^2" />
-
-                <TextView
-                    android:id="@+id/pricePerSquareMeterHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="Precio U" />
-
-                <TextView
-                    android:id="@+id/totalPriceHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="Precio Total" />
-
-            </TableRow>
-
-        </TableLayout>
 
     </RelativeLayout>
 
-    <EditText
-        android:id="@+id/totalSumTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:clickable="false"
-        android:contextClickable="false"
-        android:cursorVisible="false"
-        android:editable="false"
-        android:ems="10"
-        android:enabled="false"
-        android:inputType="textPersonName"
-        android:text="total"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.124"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/table"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/clearButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:text="Limpiar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.867"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/table" />
 </androidx.constraintlayout.widget.ConstraintLayout>
