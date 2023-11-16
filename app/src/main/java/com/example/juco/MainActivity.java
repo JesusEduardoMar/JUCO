@@ -1,5 +1,6 @@
 package com.example.juco;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 // URL de tu API en PHP
-                URL url = new URL("http://192.168.75.172/JUCO/cotizacion_info.php");
+                URL url = new URL("http://172.16.13.19/JUCO/cotizacion_info.php");
 
                 // Abrir la conexión HTTP
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -120,7 +121,13 @@ public class MainActivity extends AppCompatActivity {
 
                         // Obtener el ID del JSON
                         String id = jsonResponse.optString("id");
+                        Cotizacion cotizacion = new Cotizacion();
+                        cotizacion.setCotizacion_info_id(id);
 
+                        if(id!=null){
+                            Intent intent = new Intent(MainActivity.this, ProductosActivity.class);
+                            startActivity(intent);
+                        }
                         return "Datos enviados correctamente. ID: " + id;
                     }
                 } else {
@@ -136,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             // Mostrar el resultado en un Toast o en la interfaz de usuario según sea necesario
             Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+
         }
     }
 }

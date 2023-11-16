@@ -20,10 +20,6 @@ import java.util.List;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -88,9 +84,9 @@ public class ProductosActivity extends AppCompatActivity {
         double squareMeter = large * width;
         double pricePerSquareMeter = Double.parseDouble(pricePerSquareMeterEditText.getText().toString());
         double total = squareMeter * pricePerSquareMeter * (1 - Double.parseDouble(discountEditText.getText().toString()) / 100);
-
+        double discount = Double.parseDouble(discountEditText.getText().toString());
         // Crear objeto Producto
-        Producto producto = new Producto(productName, color, modelo, large, width, squareMeter, pricePerSquareMeter, total);
+        Producto producto = new Producto(productName, color, modelo, large, width, squareMeter, pricePerSquareMeter, total, discount);
 
         // Agregar el producto a la lista
         listaProductos.add(producto);
@@ -157,13 +153,25 @@ public class ProductosActivity extends AppCompatActivity {
     }
     private void guardarProductosEnBD() {
         // Crear un JSONArray con los productos para enviar a la API
+        // Crear un JSONArray con los productos para enviar a la API
         JSONArray jsonArray = new JSONArray();
+        Cotizacion cotizacion = new Cotizacion();
         for (Producto producto : listaProductos) {
-            jsonArray.put(producto.toJson());
-        }
+            // Crear un objeto JSONObject para representar el producto
+            JSONObject productoJson = producto.toJson();
 
+            // Agregar un nuevo campo al objeto JSON
+            try {
+                productoJson.put(cotizacion.getCotizacion_info_id(), producto.toJson());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // Agregar el objeto JSON modificado al JSONArray
+            jsonArray.put(productoJson);
+        }
         // URL de tu API para guardar productos
-        String apiUrl = "http://192.168.75.172/JUCO/cotizacion_productos.php";  // Reemplaza con la URL de tu API
+        String apiUrl = "http://172.16.13.19/JUCO/cotizacion_productos.php";  // Reemplaza con la URL de tu API
 
         // Ejecutar la tarea asíncrona para enviar los productos a la API
         new GuardarProductosTask().execute(apiUrl, jsonArray.toString());

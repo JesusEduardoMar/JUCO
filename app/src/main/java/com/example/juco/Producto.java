@@ -12,8 +12,9 @@ public class Producto {
     private double squareMeter;
     private double pricePerSquareMeter;
     private double total;
+    private double discount;
 
-    public Producto(String productName, String color, String modelo, double large, double width, double squareMeter, double pricePerSquareMeter, double total) {
+    public Producto(String productName, String color, String modelo, double large, double width, double squareMeter, double pricePerSquareMeter, double total, double discount) {
         this.productName = productName;
         this.color = color;
         this.modelo = modelo;
@@ -22,6 +23,7 @@ public class Producto {
         this.squareMeter = squareMeter;
         this.pricePerSquareMeter = pricePerSquareMeter;
         this.total = total;
+        this.discount = discount;
     }
 
     // Getter methods
@@ -58,7 +60,8 @@ public class Producto {
         return total;
     }
 
-    // Método para convertir el objeto Producto a un objeto JSONObject
+    public double getDiscount() { return discount;}
+
     public JSONObject toJson() {
         JSONObject jsonProducto = new JSONObject();
         try {
@@ -70,9 +73,13 @@ public class Producto {
             jsonProducto.put("squareMeter", squareMeter);
             jsonProducto.put("pricePerSquareMeter", pricePerSquareMeter);
             jsonProducto.put("total", total);
+            jsonProducto.put("discount", discount);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return jsonProducto;
     }
+
+    // Método para convertir el objeto Producto a un objeto JSONObject
+
 }
