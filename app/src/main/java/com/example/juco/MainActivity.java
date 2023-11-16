@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 // URL de tu API en PHP
-                URL url = new URL("http://172.16.13.19/JUCO/cotizacion_info.php");
+                URL url = new URL("http://192.168.100.58/JUCO/cotizacion_info.php");
 
                 // Abrir la conexión HTTP
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -121,11 +121,12 @@ public class MainActivity extends AppCompatActivity {
 
                         // Obtener el ID del JSON
                         String id = jsonResponse.optString("id");
-                        Cotizacion cotizacion = new Cotizacion();
+                        Cotizacion cotizacion = new Cotizacion(id);
                         cotizacion.setCotizacion_info_id(id);
 
                         if(id!=null){
                             Intent intent = new Intent(MainActivity.this, ProductosActivity.class);
+                            intent.putExtra("cotizacion_info_id", id);
                             startActivity(intent);
                         }
                         return "Datos enviados correctamente. ID: " + id;

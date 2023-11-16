@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Producto {
+    private String cotizacion_info_id;
     private String productName;
     private String color;
     private String modelo;
@@ -14,7 +15,8 @@ public class Producto {
     private double total;
     private double discount;
 
-    public Producto(String productName, String color, String modelo, double large, double width, double squareMeter, double pricePerSquareMeter, double total, double discount) {
+    public Producto(String cotizacion_info_id, String productName, String color, String modelo, double large, double width, double squareMeter, double pricePerSquareMeter, double total, double discount) {
+        this.cotizacion_info_id = cotizacion_info_id;
         this.productName = productName;
         this.color = color;
         this.modelo = modelo;
@@ -65,6 +67,7 @@ public class Producto {
     public JSONObject toJson() {
         JSONObject jsonProducto = new JSONObject();
         try {
+            jsonProducto.put("cotizacion_info_id", cotizacion_info_id);
             jsonProducto.put("productName", productName);
             jsonProducto.put("color", color);
             jsonProducto.put("modelo", modelo);
@@ -78,6 +81,10 @@ public class Producto {
             e.printStackTrace();
         }
         return jsonProducto;
+    }
+
+    public String getCotizacion_info_id() {
+        return cotizacion_info_id;
     }
 
     // Método para convertir el objeto Producto a un objeto JSONObject

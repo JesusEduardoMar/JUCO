@@ -2,6 +2,7 @@ package com.example.juco;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -40,6 +41,7 @@ public class ProductosActivity extends AppCompatActivity {
         Button cancelButton = findViewById(R.id.cancelButton);
         Button nextButton = findViewById(R.id.nextButton);
 
+
         // Configurar el clic del botón Agregar
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +77,12 @@ public class ProductosActivity extends AppCompatActivity {
         EditText pricePerSquareMeterEditText = findViewById(R.id.pricePerSquareMeterEditText);
         EditText discountEditText = findViewById(R.id.discountEditText);
 
+        Intent intent = getIntent();
+        String cotizacion_info_id = intent.getStringExtra("cotizacion_info_id");
+
+        //Cotizacion cotizacion = new Cotizacion();
         // Obtener valores de los campos de texto
+        //String cotizacion_info_id = cotizacion.getCotizacion_info_id();
         String productName = productNameEditText.getText().toString();
         String color = colorEditText.getText().toString();
         String modelo = modeloEditText.getText().toString();
@@ -86,7 +93,7 @@ public class ProductosActivity extends AppCompatActivity {
         double total = squareMeter * pricePerSquareMeter * (1 - Double.parseDouble(discountEditText.getText().toString()) / 100);
         double discount = Double.parseDouble(discountEditText.getText().toString());
         // Crear objeto Producto
-        Producto producto = new Producto(productName, color, modelo, large, width, squareMeter, pricePerSquareMeter, total, discount);
+        Producto producto = new Producto(cotizacion_info_id, productName, color, modelo, large, width, squareMeter, pricePerSquareMeter, total, discount);
 
         // Agregar el producto a la lista
         listaProductos.add(producto);
@@ -155,23 +162,22 @@ public class ProductosActivity extends AppCompatActivity {
         // Crear un JSONArray con los productos para enviar a la API
         // Crear un JSONArray con los productos para enviar a la API
         JSONArray jsonArray = new JSONArray();
-        Cotizacion cotizacion = new Cotizacion();
         for (Producto producto : listaProductos) {
             // Crear un objeto JSONObject para representar el producto
             JSONObject productoJson = producto.toJson();
 
             // Agregar un nuevo campo al objeto JSON
-            try {
-                productoJson.put(cotizacion.getCotizacion_info_id(), producto.toJson());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            //try {
+            //    productoJson.put("producto", producto.toJson());
+            //} catch (JSONException e) {
+            //    e.printStackTrace();
+            //}
 
             // Agregar el objeto JSON modificado al JSONArray
             jsonArray.put(productoJson);
         }
         // URL de tu API para guardar productos
-        String apiUrl = "http://172.16.13.19/JUCO/cotizacion_productos.php";  // Reemplaza con la URL de tu API
+        String apiUrl = "http://192.168.100.58/JUCO/cotizacion_productos.php";  // Reemplaza con la URL de tu API
 
         // Ejecutar la tarea asíncrona para enviar los productos a la API
         new GuardarProductosTask().execute(apiUrl, jsonArray.toString());
@@ -203,6 +209,7 @@ public class ProductosActivity extends AppCompatActivity {
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     // La solicitud fue exitosa
                     // Puedes manejar la respuesta del servidor aquí si es necesario
+
                     Log.d("GuardarProductos", "Productos guardados exitosamente");
                 } else {
                     // Hubo un error en la solicitud
