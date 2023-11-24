@@ -3,7 +3,15 @@ package com.example.juco;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,15 +23,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 public class ProductosActivity extends AppCompatActivity {
     private List<Producto> listaProductos = new ArrayList<>();
@@ -40,6 +52,9 @@ public class ProductosActivity extends AppCompatActivity {
         Button sendButton = findViewById(R.id.sendButton);
         Button cancelButton = findViewById(R.id.cancelButton);
         Button nextButton = findViewById(R.id.nextButton);
+
+        EditText largeEditText = findViewById(R.id.largeEditText);
+        EditText widthEditText = findViewById(R.id.widthEditText);
 
 
         // Configurar el clic del botón Agregar
@@ -65,7 +80,63 @@ public class ProductosActivity extends AppCompatActivity {
                 guardarProductosEnBD();
             }
         });
+
+        // Agregar TextWatcher a largeEditText y widthEditText
+        largeEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // No se necesita implementar
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                actualizarSquareMeter();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // No se necesita implementar
+            }
+        });
+
+        widthEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // No se necesita implementar
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                actualizarSquareMeter();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // No se necesita implementar
+            }
+        });
     }
+
+    private void actualizarSquareMeter() {
+        EditText largeEditText = findViewById(R.id.largeEditText);
+        EditText widthEditText = findViewById(R.id.widthEditText);
+        EditText squareMeterEditText = findViewById(R.id.squareMeterEditText);
+
+        double large = 0;
+        double width = 0;
+
+        if (!largeEditText.getText().toString().isEmpty()) {
+            large = Double.parseDouble(largeEditText.getText().toString());
+        }
+
+        if (!widthEditText.getText().toString().isEmpty()) {
+            width = Double.parseDouble(widthEditText.getText().toString());
+        }
+
+        double squareMeter = large * width;
+        squareMeterEditText.setText(String.valueOf(squareMeter));
+    }
+
     private void agregarProducto() {
         // Obtener referencias a los elementos de la interfaz de usuario
         EditText productNameEditText = findViewById(R.id.productNameEditText);
@@ -73,7 +144,7 @@ public class ProductosActivity extends AppCompatActivity {
         EditText modeloEditText = findViewById(R.id.modeloEditText);
         EditText largeEditText = findViewById(R.id.largeEditText);
         EditText widthEditText = findViewById(R.id.widthEditText);
-        EditText squareMeterEditText = findViewById(R.id.squareMeterEditText);
+        //EditText squareMeterEditText = findViewById(R.id.squareMeterEditText);
         EditText pricePerSquareMeterEditText = findViewById(R.id.pricePerSquareMeterEditText);
         EditText discountEditText = findViewById(R.id.discountEditText);
 
@@ -90,8 +161,12 @@ public class ProductosActivity extends AppCompatActivity {
         double width = Double.parseDouble(widthEditText.getText().toString());
         double squareMeter = large * width;
         double pricePerSquareMeter = Double.parseDouble(pricePerSquareMeterEditText.getText().toString());
-        double total = squareMeter * pricePerSquareMeter * (1 - Double.parseDouble(discountEditText.getText().toString()) / 100);
-        double discount = Double.parseDouble(discountEditText.getText().toString());
+        double discount = 0;
+        if (!discountEditText.getText().toString().isEmpty()) {
+            discount = Double.parseDouble(discountEditText.getText().toString());
+        }
+        double total = squareMeter * pricePerSquareMeter * (1 -  discount / 100);
+
         // Crear objeto Producto
         Producto producto = new Producto(cotizacion_info_id, productName, color, modelo, large, width, squareMeter, pricePerSquareMeter, total, discount);
 
@@ -165,28 +240,31 @@ public class ProductosActivity extends AppCompatActivity {
         for (Producto producto : listaProductos) {
             // Crear un objeto JSONObject para representar el producto
             JSONObject productoJson = producto.toJson();
-
-            // Agregar un nuevo campo al objeto JSON
-            //try {
-            //    productoJson.put("producto", producto.toJson());
-            //} catch (JSONException e) {
-            //    e.printStackTrace();
-            //}
-
-            // Agregar el objeto JSON modificado al JSONArray
             jsonArray.put(productoJson);
         }
         // URL de tu API para guardar productos
         String apiUrl = "http://192.168.100.58/JUCO/cotizacion_productos.php";  // Reemplaza con la URL de tu API
 
         // Ejecutar la tarea asíncrona para enviar los productos a la API
-        new GuardarProductosTask().execute(apiUrl, jsonArray.toString());
+        try {
+            boolean resultado = new GuardarProductosTask().execute(apiUrl, jsonArray.toString()).get();
+
+            if (resultado) {
+                // Operación exitosa
+                Toast.makeText(ProductosActivity.this, "Productos guardados exitosamente", Toast.LENGTH_SHORT).show();
+            } else {
+                // Error en la operación
+                Toast.makeText(ProductosActivity.this, "Error al guardar los productos", Toast.LENGTH_SHORT).show();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     // Clase AsyncTask para realizar la solicitud HTTP en segundo plano
-    private static class GuardarProductosTask extends AsyncTask<String, Void, String> {
+    private static class GuardarProductosTask extends AsyncTask<String, Void, Boolean> {
         @Override
-        protected String doInBackground(String... params) {
+        protected Boolean doInBackground(String... params) {
             String apiUrl = params[0];
             String jsonProductos = params[1];
 
@@ -209,21 +287,20 @@ public class ProductosActivity extends AppCompatActivity {
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     // La solicitud fue exitosa
                     // Puedes manejar la respuesta del servidor aquí si es necesario
-
                     Log.d("GuardarProductos", "Productos guardados exitosamente");
+                    return true;
                 } else {
                     // Hubo un error en la solicitud
                     Log.e("GuardarProductos", "Error en la solicitud HTTP: " + responseCode);
+                    return false;
                 }
 
-                // Desconectar la conexión
-                connection.disconnect();
+                // ... (código anterior)
 
             } catch (Exception e) {
                 e.printStackTrace();
+                return false;
             }
-
-            return null;
         }
     }
 
@@ -234,6 +311,5 @@ public class ProductosActivity extends AppCompatActivity {
         textView.setText(texto);
         tableRow.addView(textView);
     }
-
 
 }
