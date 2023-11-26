@@ -383,6 +383,7 @@ public class ProductosActivity extends AppCompatActivity {
         int leftY = centerY + 20;
 
         // Dibujar el texto con alineación a la izquierda
+
         String leftText = "NOMBRE: " + intent.getStringExtra("nombre")+ "\n"
                 + "DIRECCIÓN: " +  intent.getStringExtra("direccion") + "\n"
                 + "MAIL: " + intent.getStringExtra("mail") + "\n"
