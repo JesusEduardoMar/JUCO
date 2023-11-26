@@ -127,6 +127,10 @@ public class MainActivity extends AppCompatActivity {
                         if(id!=null){
                             Intent intent = new Intent(MainActivity.this, ProductosActivity.class);
                             intent.putExtra("cotizacion_info_id", id);
+                            intent.putExtra("nombre",nombre);
+                            intent.putExtra("direccion",direccion);
+                            intent.putExtra("mail",mail);
+                            intent.putExtra("tel",tel);
                             startActivity(intent);
                         }
                         return "Datos enviados correctamente. ID: " + id;
