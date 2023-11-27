@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 // URL de tu API en PHP
-                URL url = new URL("http://192.168.100.58/JUCO/cotizacion_info.php");
+                URL url = new URL("http://juco.x10.mx/cotizacion_info.php");
 
                 // Abrir la conexión HTTP
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

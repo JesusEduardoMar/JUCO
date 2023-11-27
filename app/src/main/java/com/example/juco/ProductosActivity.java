@@ -249,7 +249,7 @@ public class ProductosActivity extends AppCompatActivity {
             jsonArray.put(productoJson);
         }
         // URL de tu API para guardar productos
-        String apiUrl = "http://192.168.100.58/JUCO/cotizacion_productos.php";  // Reemplaza con la URL de tu API
+        String apiUrl = "http://juco.x10.mx/cotizacion_productos.php";  // Reemplaza con la URL de tu API
 
         // Ejecutar la tarea asíncrona para enviar los productos a la API
         try {
