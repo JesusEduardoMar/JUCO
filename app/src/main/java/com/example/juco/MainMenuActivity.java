@@ -25,6 +25,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
         clothingCard = findViewById(R.id.clothingCard);
         doCard = findViewById(R.id.doCard);
+
+
         clothingCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
