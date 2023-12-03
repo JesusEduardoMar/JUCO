@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         mailEditText = findViewById(R.id.mailEditText);
         telEditText = findViewById(R.id.telEditText);
 
-        Button sendButton = findViewById(R.id.sendButton);
+        Button sendButton = findViewById(R.id.updateButton);
         Button clearButton = findViewById(R.id.nextButton);
 
         sendButton.setOnClickListener(new View.OnClickListener() {

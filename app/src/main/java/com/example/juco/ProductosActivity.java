@@ -23,7 +23,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -54,7 +53,7 @@ public class ProductosActivity extends AppCompatActivity {
 
         tableLayout = findViewById(R.id.tableLayout);
         totalSumTextView = findViewById(R.id.totalSumTextView);
-        Button sendButton = findViewById(R.id.sendButton);
+        Button sendButton = findViewById(R.id.updateButton);
         Button cancelButton = findViewById(R.id.cancelButton);
         Button nextButton = findViewById(R.id.nextButton);
 

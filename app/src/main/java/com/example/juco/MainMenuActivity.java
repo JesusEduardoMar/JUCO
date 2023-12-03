@@ -12,6 +12,7 @@ public class MainMenuActivity extends AppCompatActivity {
     private CardView clothingCard;
     private CardView messageCard;
     private CardView doCard;
+    private CardView editCard;
     private CardView ayudaCard;
     private Button aboutUsButton;
 
@@ -25,6 +26,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
         clothingCard = findViewById(R.id.clothingCard);
         doCard = findViewById(R.id.doCard);
+        editCard = findViewById(R.id.editCard);
 
 
         clothingCard.setOnClickListener(new View.OnClickListener() {
@@ -44,6 +46,13 @@ public class MainMenuActivity extends AppCompatActivity {
             }
         });
 
+        editCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenuActivity.this, EditarCotizaciones.class);
+                startActivity(intent);
+            }
+        });
 
     }
 }
