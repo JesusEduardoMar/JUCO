@@ -11,314 +11,187 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
-
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.ExecutionException;
-
-public class ProductosActivity extends AppCompatActivity {
-    private List<Producto> listaProductos = new ArrayList<>();
-    private TableLayout tableLayout;
+public class VisualizarCotizacionesProducto extends AppCompatActivity {
+    private ListView cotizacionesListView;
     private EditText totalSumTextView;
+    private EditText descuentoSumTextView;
+    private String jsonResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_productos);
+        setContentView(R.layout.activity_visualizar_cotizaciones_producto);
 
-        tableLayout = findViewById(R.id.tableLayout);
+        Button crearPdf = findViewById(R.id.crearPdf);
+        cotizacionesListView = findViewById(R.id.cotizacionesListView);
         totalSumTextView = findViewById(R.id.totalSumTextView);
-        Button sendButton = findViewById(R.id.updateButton);
-        Button cancelButton = findViewById(R.id.cancelButton);
-        Button nextButton = findViewById(R.id.nextButton);
+        descuentoSumTextView = findViewById(R.id.descuentoSumTextView);
 
-        EditText largeEditText = findViewById(R.id.largeEditText);
-        EditText widthEditText = findViewById(R.id.widthEditText);
-
-
-        // Configurar el clic del botón Agregar
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        crearPdf.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                agregarProducto();
+            public void onClick(View v) {
+                imprimirPdf();
             }
         });
 
-        // Configurar el clic del botón Cancelar
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                limpiarTabla();
-            }
-        });
-
-        // Configurar el clic del botón Siguiente
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                guardarProductosEnBD();
-            }
-        });
-
-        // Agregar TextWatcher a largeEditText y widthEditText
-        largeEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // No se necesita implementar
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                actualizarSquareMeter();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // No se necesita implementar
-            }
-        });
-
-        widthEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // No se necesita implementar
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                actualizarSquareMeter();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // No se necesita implementar
-            }
-        });
-    }
-
-    private void actualizarSquareMeter() {
-        EditText largeEditText = findViewById(R.id.largeEditText);
-        EditText widthEditText = findViewById(R.id.widthEditText);
-        EditText squareMeterEditText = findViewById(R.id.squareMeterEditText);
-
-        double large = 0;
-        double width = 0;
-
-        if (!largeEditText.getText().toString().isEmpty()) {
-            large = Double.parseDouble(largeEditText.getText().toString());
-        }
-
-        if (!widthEditText.getText().toString().isEmpty()) {
-            width = Double.parseDouble(widthEditText.getText().toString());
-        }
-
-        double squareMeter = large * width;
-        squareMeterEditText.setText(String.valueOf(squareMeter));
-    }
-
-    private void agregarProducto() {
-        // Obtener referencias a los elementos de la interfaz de usuario
-        EditText productNameEditText = findViewById(R.id.productNameEditText);
-        EditText colorEditText = findViewById(R.id.colorEditText);
-        EditText modeloEditText = findViewById(R.id.modeloEditText);
-        EditText largeEditText = findViewById(R.id.largeEditText);
-        EditText widthEditText = findViewById(R.id.widthEditText);
-        //EditText squareMeterEditText = findViewById(R.id.squareMeterEditText);
-        EditText pricePerSquareMeterEditText = findViewById(R.id.pricePerSquareMeterEditText);
-        EditText discountEditText = findViewById(R.id.discountEditText);
-
+//       Obtener el id de la intent
         Intent intent = getIntent();
-        String cotizacion_info_id = intent.getStringExtra("cotizacion_info_id");
+        String id = intent.getStringExtra("id");
 
-        //Cotizacion cotizacion = new Cotizacion();
-        // Obtener valores de los campos de texto
-        //String cotizacion_info_id = cotizacion.getCotizacion_info_id();
-        String productName = productNameEditText.getText().toString();
-        String color = colorEditText.getText().toString();
-        String modelo = modeloEditText.getText().toString();
-        double large = Double.parseDouble(largeEditText.getText().toString());
-        double width = Double.parseDouble(widthEditText.getText().toString());
-        double squareMeter = large * width;
-        double pricePerSquareMeter = Double.parseDouble(pricePerSquareMeterEditText.getText().toString());
-        double discount = 0;
-        if (!discountEditText.getText().toString().isEmpty()) {
-            discount = Double.parseDouble(discountEditText.getText().toString());
-        }
-        double total = squareMeter * pricePerSquareMeter * (1 - discount / 100);
-
-        // Crear objeto Producto
-        Producto producto = new Producto(cotizacion_info_id, productName, color, modelo, large, width, squareMeter, pricePerSquareMeter, total, discount);
-
-        // Agregar el producto a la lista
-        listaProductos.add(producto);
-
-        discountEditText.setEnabled(false);
-        // Actualizar la tabla y la suma total
-        actualizarTabla();
+        // Realiza la solicitud HTTP en segundo plano http://juco.x10.mx/obtener_cotizaciones_producto.php
+        new FetchCotizacionesTask().execute(id);
     }
 
-    private void actualizarTabla() {
-        // Limpiar la tabla antes de actualizarla
-        tableLayout.removeAllViews();
+    private class FetchCotizacionesTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String id = params[0];
+            try {
+                URL url = new URL("http://juco.x10.mx/obtener_cotizaciones_producto.php");
 
-        // Crear una fila de encabezado
-        TableRow headerRow = new TableRow(this);
-        headerRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                // Abrir la conexión HTTP
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoOutput(true);
 
-        // Crear encabezados de columna
-        agregarTextViewATableRow("Producto", headerRow);
-        agregarTextViewATableRow("Color", headerRow);
-        agregarTextViewATableRow("Modelo", headerRow);
-        agregarTextViewATableRow("Largo", headerRow);
-        agregarTextViewATableRow("Ancho", headerRow);
-        agregarTextViewATableRow("m^2", headerRow);
-        agregarTextViewATableRow("Precio U", headerRow);
-        agregarTextViewATableRow("Precio Total", headerRow);
+                // Crear los datos a enviar usando Uri.Builder
+                Uri.Builder builder = new Uri.Builder().appendQueryParameter("id", id);
+                String query = builder.build().getEncodedQuery();
 
-        // Agregar la fila de encabezado a la tabla
-        tableLayout.addView(headerRow);
+                // Escribir los datos en el flujo de salida
+                try (OutputStream os = urlConnection.getOutputStream()) {
+                    os.write(query.getBytes(StandardCharsets.UTF_8));
+                }
 
-        // Iterar sobre la lista de productos y agregar cada producto a la tabla
-        for (Producto producto : listaProductos) {
-            TableRow tableRow = new TableRow(this);
-            tableRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                // Obtener la respuesta del servidor
+                int responseCode = urlConnection.getResponseCode();
 
-            agregarTextViewATableRow(producto.getProductName(), tableRow);
-            agregarTextViewATableRow(producto.getColor(), tableRow);
-            agregarTextViewATableRow(producto.getModelo(), tableRow);
-            agregarTextViewATableRow(String.valueOf(producto.getLarge()), tableRow);
-            agregarTextViewATableRow(String.valueOf(producto.getWidth()), tableRow);
-            agregarTextViewATableRow(String.valueOf(producto.getSquareMeter()), tableRow);
-            agregarTextViewATableRow(String.valueOf(producto.getPricePerSquareMeter()), tableRow);
-            agregarTextViewATableRow(String.valueOf(producto.getTotal()), tableRow);
-
-            // Agregar la fila a la tabla
-            tableLayout.addView(tableRow);
-        }
-
-        // Calcular la suma total
-        double sumaTotal = 0;
-        for (Producto producto : listaProductos) {
-            sumaTotal += producto.getTotal();
-        }
-
-        // Mostrar la suma total en el TextView correspondiente
-        totalSumTextView.setText(String.valueOf(sumaTotal));
-    }
-
-    private void limpiarTabla() {
-        // Limpiar la lista de productos
-        listaProductos.clear();
-
-        // Actualizar la tabla y la suma total
-        actualizarTabla();
-    }
-
-    private void guardarProductosEnBD() {
-        // Crear un JSONArray con los productos para enviar a la API
-        // Crear un JSONArray con los productos para enviar a la API
-        JSONArray jsonArray = new JSONArray();
-        for (Producto producto : listaProductos) {
-            // Crear un objeto JSONObject para representar el producto
-            JSONObject productoJson = producto.toJson();
-            jsonArray.put(productoJson);
-        }
-        // URL de tu API para guardar productos
-        String apiUrl = "http://juco.x10.mx/cotizacion_productos.php";  // Reemplaza con la URL de tu API
-
-        // Ejecutar la tarea asíncrona para enviar los productos a la API
-        try {
-            boolean resultado = new GuardarProductosTask().execute(apiUrl, jsonArray.toString()).get();
-
-            if (resultado) {
-                // Operación exitosa
-                Toast.makeText(ProductosActivity.this, "Productos guardados exitosamente", Toast.LENGTH_SHORT).show();
-                imprimirPdf(listaProductos);
-            } else {
-                // Error en la operación
-                Toast.makeText(ProductosActivity.this, "Error al guardar los productos", Toast.LENGTH_SHORT).show();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = bufferedReader.readLine()) != null) {
+                            stringBuilder.append(line).append("\n");
+                        }
+                        return stringBuilder.toString();
+                    }
+                } else {
+                    // Manejar el error del servidor
+                    return null;
+                }
+            } catch (IOException e) {
+                // Manejar otras excepciones
+                e.printStackTrace();
+                return null;
             }
-        } catch (InterruptedException | ExecutionException e) {
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result != null) {
+                // Procesa el resultado JSON y actualiza el ListView
+                jsonResult = result;
+                updateListView(result);
+            } else {
+                Toast.makeText(VisualizarCotizacionesProducto.this, "Error al obtener datos", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void updateListView(String jsonResult) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResult);
+            String status = jsonObject.getString("status");
+
+            if ("success".equals(status)) {
+                JSONArray cotizacionesArray = jsonObject.getJSONArray("cotizaciones");
+                ArrayList<String> cotizacionesList = new ArrayList<>();
+
+                double sumaTotal = 0;
+                double des = 0;
+
+
+
+                for (int i = 0; i < cotizacionesArray.length(); i++) {
+                    double totalProductos = 0;
+                    JSONObject cotizacion = cotizacionesArray.getJSONObject(i);
+                    String nombreProducto = cotizacion.optString("product_name", "Nombre no disponible");
+                    String color = cotizacion.optString("color", "Color no disponible");
+                    String modelo = cotizacion.optString("modelo", "Modelo no disponible");
+                    String largo = cotizacion.optString("large", "Largo no disponible");
+                    String ancho = cotizacion.optString("width", "Ancho no disponible");
+                    String metrosCuadrado = cotizacion.optString("square_meter", "Metros cuadrados no disponible");
+                    String precioPorMetroc = cotizacion.optString("price_per_square_meter", "Precio no disponible");
+                    String totalProducto = cotizacion.optString("total_price", "Total no disponible");
+                    String Descuento = cotizacion.optString("discount", "Descuento no disponible");
+
+                    totalProductos= Double.parseDouble(metrosCuadrado)*Double.parseDouble(precioPorMetroc);
+                    sumaTotal += Integer.parseInt(totalProducto);
+                    des = Double.parseDouble(Descuento);
+
+
+                    cotizacionesList.add("Producto: " + (i + 1) + "\nNombre del producto: " + nombreProducto + "\nColor: " + color + "\nModelo: " + modelo
+                            + "\nLargo: " + largo + "\nAncho: " + ancho + "\nMetros cuadrados: " + metrosCuadrado + "\nPrecio por m^2: " + precioPorMetroc
+                            + "\nTotal Producto: " + totalProductos);
+                }
+
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cotizacionesList);
+                cotizacionesListView.setAdapter(adapter);
+
+                // Mostrar la suma total en el TextView correspondiente
+                descuentoSumTextView.setText(String.valueOf(des));
+                totalSumTextView.setText(String.valueOf(sumaTotal));
+                // Maneja el clic en elementos de la lista si es necesario
+                cotizacionesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        // Puedes agregar aquí el código para manejar el clic en elementos de la lista
+                        // Por ejemplo, mostrar detalles de la cotización
+                    }
+                });
+            } else {
+                Toast.makeText(VisualizarCotizacionesProducto.this, "Error en la respuesta del servidor", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    // Clase AsyncTask para realizar la solicitud HTTP en segundo plano
-    private static class GuardarProductosTask extends AsyncTask<String, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(String... params) {
-            String apiUrl = params[0];
-            String jsonProductos = params[1];
 
-            try {
-                // Crear la URL y la conexión HTTP
-                URL url = new URL(apiUrl);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json");
-                connection.setDoOutput(true);
+    public void imprimirPdf() {
 
-                // Enviar los datos JSON al servidor
-                OutputStream os = connection.getOutputStream();
-                os.write(jsonProductos.getBytes());
-                os.flush();
-                os.close();
-
-                // Obtener la respuesta del servidor
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    // La solicitud fue exitosa
-                    // Puedes manejar la respuesta del servidor aquí si es necesario
-                    Log.d("GuardarProductos", "Productos guardados exitosamente");
-                    return true;
-                } else {
-                    // Hubo un error en la solicitud
-                    Log.e("GuardarProductos", "Error en la solicitud HTTP: " + responseCode);
-                    return false;
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-    }
-
-    private void agregarTextViewATableRow(String texto, TableRow tableRow) {
-        TextView textView = new TextView(this);
-        textView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-        textView.setPadding(5, 5, 5, 5);
-        textView.setText(texto);
-        tableRow.addView(textView);
-    }
-
-    public void imprimirPdf(List<Producto> listaProductos) {
-
+        List<JSONObject> listaProductos = obtenerListaProductosDesdeJson(jsonResult);
         Intent intent = getIntent();
         // Crear un nuevo documento PDF
         PdfDocument document = new PdfDocument();
@@ -382,10 +255,10 @@ public class ProductosActivity extends AppCompatActivity {
 
         // Dibujar el texto con alineación a la izquierda
 
-        String leftText = "NOMBRE: " + intent.getStringExtra("nombre")+ "\n"
-                + "DIRECCIÓN: " +  intent.getStringExtra("direccion") + "\n"
+        String leftText = "NOMBRE: " + intent.getStringExtra("nombre") + "\n"
+                + "DIRECCIÓN: " + intent.getStringExtra("direccion") + "\n"
                 + "MAIL: " + intent.getStringExtra("mail") + "\n"
-                + "TEL: " +  intent.getStringExtra("tel");
+                + "TEL: " + intent.getStringExtra("cel");
         drawMultilineText(canvas, leftText, leftX, leftY, paint, pageWidth - 2 * leftX);
 
         // Definir los márgenes y el espacio entre filas en la tabla
@@ -418,19 +291,17 @@ public class ProductosActivity extends AppCompatActivity {
             canvas.drawLine(tableX + (i + 1) * columnWidth, tableY, tableX + (i + 1) * columnWidth, tableY + rowHeight, paint);
         }
 
-        // Obtener los datos de la clase Decoracion
-        //List<Decoracion> decoraciones = getDecoraciones(); // Obtén la lista de decoraciones desde donde corresponda
 
         // Dibujar los datos de la tabla
         for (int i = 0; i < listaProductos.size(); i++) {
-            Producto producto = listaProductos.get(i);
-            String productName = producto.getProductName();
-            String modelo = producto.getModelo();
-            String color = producto.getColor();
-            double large = producto.getLarge();
-            double widt = producto.getWidth();
-            double squareMeter = producto.getSquareMeter();
-            double pricePerSquareMeter = producto.getPricePerSquareMeter();
+            JSONObject producto = listaProductos.get(i);
+            String productName = producto.optString("product_name", "Nombre no disponible");
+            String modelo = producto.optString("modelo", "Modelo no disponible");
+            String color = producto.optString("color", "Color no disponible");
+            double large = producto.optDouble("large", 0);
+            double widt = producto.optDouble("width", 0);
+            double squareMeter = producto.optDouble("square_meter", 0);
+            double pricePerSquareMeter = producto.optDouble("price_per_square_meter", 0);
             double totalPrice = squareMeter * pricePerSquareMeter;
 
             String[] rowData = {
@@ -459,13 +330,14 @@ public class ProductosActivity extends AppCompatActivity {
 
 // Calcular el subtotal
         double subtotal = 0;
-        for (Producto producto : listaProductos) {
-            subtotal += producto.getSquareMeter() * producto.getPricePerSquareMeter();
+        for (JSONObject producto : listaProductos) {
+            double squareMeter = producto.optDouble("square_meter", 0);
+            double pricePerSquareMeter = producto.optDouble("price_per_square_meter", 0);
+            subtotal += squareMeter * pricePerSquareMeter;
         }
 
 // Obtener el descuento ingresado (si lo hay)
-        Producto ultimoProducto = listaProductos.get(0);
-        double descuento = ultimoProducto.getDiscount();
+        double descuento = listaProductos.isEmpty() ? 0 : listaProductos.get(0).optDouble("discount", 0);
 
 // Calcular el total
         double total = subtotal - ((descuento / 100) * subtotal);
@@ -560,7 +432,7 @@ public class ProductosActivity extends AppCompatActivity {
 
         // Guardar el documento PDF en el almacenamiento externo
         File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File file = new File(directory, "Cotizacion"+cotizacion_info_id+".pdf");
+        File file = new File(directory, "Cotizacion" + cotizacion_info_id + ".pdf");
         try {
             document.writeTo(new FileOutputStream(file));
             Toast.makeText(this, "Se creó el PDF correctamente", Toast.LENGTH_LONG).show();
@@ -593,6 +465,32 @@ public class ProductosActivity extends AppCompatActivity {
         }
 
         return y + totalHeight / 2;
+    }
+
+    private List<JSONObject> obtenerListaProductosDesdeJson(String jsonResult) {
+        List<JSONObject> listaProductos = new ArrayList<>();
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResult);
+            String status = jsonObject.getString("status");
+
+            if ("success".equals(status)) {
+                JSONArray cotizacionesArray = jsonObject.getJSONArray("cotizaciones");
+
+                for (int i = 0; i < cotizacionesArray.length(); i++) {
+                    JSONObject cotizacion = cotizacionesArray.getJSONObject(i);
+
+                    // Agregar directamente el objeto JSONObject a la lista
+                    listaProductos.add(cotizacion);
+                }
+            } else {
+                Toast.makeText(this, "Error en la respuesta del servidor", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return listaProductos;
     }
 
     private void drawMultilineText(Canvas canvas, String text, float x, float y, Paint paint, float maxWidth) {

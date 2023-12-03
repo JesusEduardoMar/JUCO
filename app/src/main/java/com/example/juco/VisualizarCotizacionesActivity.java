@@ -1,5 +1,6 @@
 package com.example.juco;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 
 public class VisualizarCotizacionesActivity extends AppCompatActivity {
     private ListView cotizacionesListView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,8 +99,31 @@ public class VisualizarCotizacionesActivity extends AppCompatActivity {
                 cotizacionesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        // Puedes agregar aquí el código para manejar el clic en elementos de la lista
-                        // Por ejemplo, mostrar detalles de la cotización
+                        JSONObject cotizacionSeleccionada = null;
+                        try {
+                            cotizacionSeleccionada = cotizacionesArray.getJSONObject(position);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        String idbd = cotizacionSeleccionada.optString("id", "ID no disponible");
+                        String nombre = cotizacionSeleccionada.optString("nombre", "Nombre no disponible");
+                        String direccion = cotizacionSeleccionada.optString("direccion", "Dirección no disponible");
+                        String mail = cotizacionSeleccionada.optString("mail", "Email no disponible");
+                        String cel = cotizacionSeleccionada.optString("cel", "Celular no disponible");
+
+                        // Crea un Intent para pasar a la nueva actividad
+                        Intent detalleIntent = new Intent(VisualizarCotizacionesActivity.this, VisualizarCotizacionesProducto.class);
+
+                        // Agrega los datos al Intent
+                        detalleIntent.putExtra("id", idbd);
+                        detalleIntent.putExtra("nombre", nombre);
+                        detalleIntent.putExtra("direccion", direccion);
+                        detalleIntent.putExtra("mail", mail);
+                        detalleIntent.putExtra("cel", cel);
+
+                        // Inicia la nueva actividad
+                        startActivity(detalleIntent);
                     }
                 });
             } else {

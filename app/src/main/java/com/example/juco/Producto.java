@@ -28,6 +28,7 @@ public class Producto {
         this.discount = discount;
     }
 
+
     // Getter methods
 
     public String getProductName() {
